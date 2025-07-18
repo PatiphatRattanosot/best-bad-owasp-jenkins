@@ -517,7 +517,7 @@ app.post('/transfer-money-best', csrf(), (req, res) => {
 
 // --- A06:2021 – Vulnerable and Outdated Components ---
 // การสาธิตนี้จะทำได้โดยการใช้ dependencies ที่มีช่องโหว่ใน package.json
-// และให้นักศึกษาลองรัน `npm audit`
+// และให้ลองรัน `npm audit`
 // (ในตัวอย่างนี้ใช้ dependencies ที่อัปเดตแล้วเพื่อความปลอดภัย)
 
 // --- Error Handling Middleware (Best Practice: Security Misconfiguration) ---
