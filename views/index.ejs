@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OWASP Express.js Workshop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+      .link-group a {
+        display: block;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: #f3f4f6;
+        border-radius: 0.5rem;
+        transition: background-color 0.2s;
+      }
+      .link-group a:hover {
+        background-color: #e5e7eb;
+      }
+      .bad-practice {
+        color: #ef4444;
+        font-weight: bold;
+      }
+      .best-practice {
+        color: #22c55e;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-900">
+    <div class="container bg-white shadow-lg rounded-lg mt-10">
+      <h1 class="text-3xl font-bold text-center mb-6">
+        OWASP Express.js Workshop: Bad & Best Practices
+      </h1>
+      <p class="text-center text-gray-600 mb-8">
+        สำรวจช่องโหว่ความปลอดภัยทางเว็บและวิธีการป้องกันในแอปพลิเคชัน Express.js
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h2 class="section-title">
+            A07:2021 – Identification and Authentication Failures
+          </h2>
+          <div class="link-group">
+            <a href="/register" class="bad-practice"
+              >Register (Bad/Weak Password)</a
+            >
+            <a href="/login" class="bad-practice">Login (Bad/No Rate Limit)</a>
+            <a href="/register" class="best-practice"
+              >Register (Best/Strong Password)</a
+            >
+            <a href="/login" class="best-practice">Login (Best/Rate Limit)</a>
+            <a href="/profile" class="best-practice"
+              >View Profile (Requires Login)</a
+            >
+            <a href="/logout">Logout</a>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">A01:2021 – Broken Access Control</h2>
+          <div class="link-group">
+            <p class="text-gray-700">หลังจาก Login:</p>
+            <a
+              href="/api/user-bad/66986e64249a4f61530e0123"
+              target="_blank"
+              class="bad-practice"
+              >API: Get User by ID (Bad - IDOR)</a
+            >
+            <a
+              href="/api/user-best/66986e64249a4f61530e0123"
+              target="_blank"
+              class="best-practice"
+              >API: Get User by ID (Best - Access Control)</a
+            >
+            <p class="text-gray-700">
+              ลองเปลี่ยน ID ใน URL เป็น ID ของผู้ใช้คนอื่น
+            </p>
+            <a
+              href="/download-bad?file=../../../../etc/passwd"
+              target="_blank"
+              class="bad-practice"
+              >Download File (Bad - Path Traversal)</a
+            >
+            <a
+              href="/download-best?file=test.txt"
+              target="_blank"
+              class="best-practice"
+              >Download File (Best - Path Traversal)</a
+            >
+            <p class="text-gray-700">
+              สร้างไฟล์ dummy ในโฟลเดอร์ 'uploads' เช่น 'test.txt' ก่อน
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">A03:2021 – Injection</h2>
+          <div class="link-group">
+            <p class="text-gray-700">สำหรับ NoSQL Injection (MongoDB):</p>
+            <a
+              href="/api/search-user-bad?username[$ne]=null"
+              target="_blank"
+              class="bad-practice"
+              >API: Search User (Bad - NoSQL Injection)</a
+            >
+            <a
+              href="/api/search-user-best?username=admin"
+              target="_blank"
+              class="best-practice"
+              >API: Search User (Best - Input Sanitization)</a
+            >
+            <p class="text-gray-700">
+              ลองเปลี่ยน query เป็น <code>username[$ne]=null</code> สำหรับ Bad
+              Practice
+            </p>
+            <p class="text-gray-700">สำหรับ XSS:</p>
+            <a href="/comments" target="_blank" class="bad-practice"
+              >View Comments (Bad - Stored XSS)</a
+            >
+            <a
+              href="/search-xss?q=<script>alert('Reflected XSS!');</script>"
+              target="_blank"
+              class="bad-practice"
+              >Search (Bad - Reflected XSS)</a
+            >
+            <a
+              href="/search-xss-best?q=<script>alert('Reflected XSS!');</script>"
+              target="_blank"
+              class="best-practice"
+              >Search (Best - XSS Protected)</a
+            >
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">A05:2021 – Security Misconfiguration</h2>
+          <div class="link-group">
+            <a href="/error-test-bad" target="_blank" class="bad-practice"
+              >Trigger Error (Bad - Verbose Error)</a
+            >
+            <a href="/error-test-best" target="_blank" class="best-practice"
+              >Trigger Error (Best - Custom Error)</a
+            >
+            <p class="text-gray-700">
+              ตรวจสอบ Console และหน้าเว็บสำหรับความแตกต่าง
+            </p>
+            <p class="text-gray-700">
+              **Helmet Middleware** ถูกใช้ใน <code>server.js</code> สำหรับ Best
+              Practice ของ Security Headers
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">
+            A08:2021 – Software and Data Integrity Failures
+          </h2>
+          <div class="link-group">
+            <p class="text-gray-700">สำหรับ File Upload:</p>
+            <form
+              action="/upload-bad"
+              method="POST"
+              enctype="multipart/form-data"
+              class="mb-4 p-4 border rounded-lg bg-red-50"
+            >
+              <label
+                for="file-bad"
+                class="block text-sm font-medium text-gray-700"
+                >Upload File (Bad Practice):</label
+              >
+              <input
+                type="file"
+                name="file"
+                id="file-bad"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+              />
+              <button
+                type="submit"
+                class="mt-3 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Upload Bad
+              </button>
+            </form>
+            <form
+              action="/upload-best"
+              method="POST"
+              enctype="multipart/form-data"
+              class="mb-4 p-4 border rounded-lg bg-green-50"
+            >
+              <label
+                for="file-best"
+                class="block text-sm font-medium text-gray-700"
+                >Upload File (Best Practice):</label
+              >
+              <input
+                type="file"
+                name="file"
+                id="file-best"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+              />
+              <button
+                type="submit"
+                class="mt-3 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                Upload Best
+              </button>
+            </form>
+            <p class="text-gray-700">
+              สำหรับ Insecure Deserialization (ใช้ Postman/curl):
+            </p>
+            <p class="text-gray-700">
+              POST <code>/deserialize-bad</code> with body
+              <code>{ "data": "console.log('Attacker Code Executed!');" }</code>
+            </p>
+            <p class="text-gray-700">
+              POST <code>/deserialize-best</code> with body
+              <code>{ "data": "{\"key\": \"value\"}" }</code>
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">
+            A10:2021 – Server-Side Request Forgery (SSRF)
+          </h2>
+          <div class="link-group">
+            <a
+              href="/fetch-url-bad?url=http://localhost:3000/api/user-bad/1"
+              target="_blank"
+              class="bad-practice"
+              >Fetch URL (Bad - SSRF)</a
+            >
+            <a
+              href="/fetch-url-best?url=[https://jsonplaceholder.typicode.com/todos/1](https://jsonplaceholder.typicode.com/todos/1)"
+              target="_blank"
+              class="best-practice"
+              >Fetch URL (Best - SSRF Protected)</a
+            >
+            <p class="text-gray-700">
+              ลองเปลี่ยน URL ใน Bad Practice เป็น
+              <code>file:///etc/passwd</code> หรือ
+              <code
+                >[http://169.254.169.254/latest/meta-data/](http://169.254.169.254/latest/meta-data/)</code
+              >
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">Other Critical Vulnerabilities</h2>
+          <div class="link-group">
+            <p class="text-gray-700">สำหรับ CSRF:</p>
+            <a href="/transfer-bad" class="bad-practice"
+              >Money Transfer (Bad - No CSRF)</a
+            >
+            <a href="/transfer-best" class="best-practice"
+              >Money Transfer (Best - CSRF Protected)</a
+            >
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <h2 class="section-title">Notes</h2>
+          <ul class="list-disc list-inside text-gray-700">
+            <li>
+              สำหรับ Bad Practice บางอย่าง เช่น IDOR หรือ NoSQL Injection
+              คุณอาจต้องสร้างผู้ใช้หลายคนในฐานข้อมูลเพื่อทดสอบ
+            </li>
+            <li>
+              สำหรับ Path Traversal (Bad), คุณสามารถลองสร้างไฟล์ dummy
+              ในโฟลเดอร์ <code>uploads/</code> (เช่น
+              <code>uploads/test.txt</code>)
+              เพื่อทดสอบการดาวน์โหลดไฟล์ที่ถูกต้อง
+            </li>
+            <li>
+              สำหรับ Insecure Deserialization (Bad), การใช้
+              <code>eval()</code> เป็นอันตรายอย่างยิ่งและไม่ควรใช้ใน Production
+            </li>
+            <li>
+              สำหรับ SSRF (Bad), ลองเปลี่ยน URL เป็น
+              <code>file:///etc/passwd</code> (บน Linux) หรือ
+              <code>http://localhost:3000/</code>
+              เพื่อดูว่าเซิร์ฟเวอร์สามารถเข้าถึงทรัพยากรภายในได้หรือไม่
+            </li>
+            <li>
+              สำหรับ XSS (Bad), ลองใส่
+              <code>&lt;script&gt;alert('XSS!');&lt;/script&gt;</code>
+              ในช่องค้นหาหรือในคอมเมนต์ (ถ้ามี)
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

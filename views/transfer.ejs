@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Money Transfer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen"
+  >
+    <div class="container bg-white shadow-lg rounded-lg p-8">
+      <h1 class="text-2xl font-bold text-center mb-6">Money Transfer</h1>
+
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-3 text-red-600">
+          Bad Practice: No CSRF Protection
+        </h2>
+        <form action="/transfer-money-bad" method="POST" class="space-y-4">
+          <!-- Bad Practice: ไม่มี CSRF token -->
+          <div>
+            <label
+              for="amount-bad"
+              class="block text-sm font-medium text-gray-700"
+              >Amount:</label
+            >
+            <input
+              type="number"
+              id="amount-bad"
+              name="amount"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"
+              required
+              min="1"
+            />
+          </div>
+          <div>
+            <label
+              for="recipient-bad"
+              class="block text-sm font-medium text-gray-700"
+              >Recipient:</label
+            >
+            <input
+              type="text"
+              id="recipient-bad"
+              name="recipient"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Transfer (Bad)
+          </button>
+        </form>
+        <p class="text-sm text-gray-500 mt-2">
+          ผู้โจมตีสามารถสร้างหน้าเว็บหลอกให้คุณส่งฟอร์มนี้ได้
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-3 text-green-600">
+          Best Practice: With CSRF Protection
+        </h2>
+        <form action="/transfer-money-best" method="POST" class="space-y-4">
+          <!-- Best Practice: มี CSRF token -->
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div>
+            <label
+              for="amount-best"
+              class="block text-sm font-medium text-gray-700"
+              >Amount:</label
+            >
+            <input
+              type="number"
+              id="amount-best"
+              name="amount"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              required
+              min="1"
+            />
+          </div>
+          <div>
+            <label
+              for="recipient-best"
+              class="block text-sm font-medium text-gray-700"
+              >Recipient:</label
+            >
+            <input
+              type="text"
+              id="recipient-best"
+              name="recipient"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Transfer (Best)
+          </button>
+        </form>
+        <p class="text-sm text-gray-500 mt-2">
+          มี CSRF token ป้องกันการโจมตีจากภายนอก
+        </p>
+      </div>
+
+      <p class="mt-6 text-center text-gray-600">
+        <a href="/" class="text-blue-600 hover:underline">กลับหน้าหลัก</a>
+      </p>
+    </div>
+  </body>
+</html>

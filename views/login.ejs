@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen"
+  >
+    <div class="container bg-white shadow-lg rounded-lg p-8">
+      <h1 class="text-2xl font-bold text-center mb-6">Login</h1>
+
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-3 text-red-600">
+          Bad Practice: No Rate Limit
+        </h2>
+        <form action="/login-bad" method="POST" class="space-y-4">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div>
+            <label
+              for="username-bad"
+              class="block text-sm font-medium text-gray-700"
+              >Username:</label
+            >
+            <input
+              type="text"
+              id="username-bad"
+              name="username"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="password-bad"
+              class="block text-sm font-medium text-gray-700"
+              >Password:</label
+            >
+            <input
+              type="password"
+              id="password-bad"
+              name="password"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Login (Bad)
+          </button>
+        </form>
+        <p class="text-sm text-gray-500 mt-2">
+          ลองใช้รหัสผ่านผิดหลายๆ ครั้งเพื่อดูว่าไม่มีการจำกัด
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-3 text-green-600">
+          Best Practice: With Rate Limit
+        </h2>
+        <form action="/login-best" method="POST" class="space-y-4">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div>
+            <label
+              for="username-best"
+              class="block text-sm font-medium text-gray-700"
+              >Username:</label
+            >
+            <input
+              type="text"
+              id="username-best"
+              name="username"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="password-best"
+              class="block text-sm font-medium text-gray-700"
+              >Password:</label
+            >
+            <input
+              type="password"
+              id="password-best"
+              name="password"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Login (Best)
+          </button>
+        </form>
+        <p class="text-sm text-gray-500 mt-2">
+          ลองใช้รหัสผ่านผิดหลายๆ ครั้งเพื่อดูการจำกัด
+        </p>
+      </div>
+
+      <p class="mt-6 text-center text-gray-600">
+        ยังไม่มีบัญชี?
+        <a href="/register" class="text-blue-600 hover:underline"
+          >ลงทะเบียนที่นี่</a
+        >
+      </p>
+    </div>
+  </body>
+</html>

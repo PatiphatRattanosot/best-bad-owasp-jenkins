@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen"
+  >
+    <div class="container bg-white shadow-lg rounded-lg p-8">
+      <h1 class="text-2xl font-bold text-center mb-6">User Profile</h1>
+
+      <div class="space-y-4">
+        <p class="text-lg"><strong>Username:</strong> <%= user.username %></p>
+        <p class="text-lg"><strong>Email:</strong> <%= user.email %></p>
+        <p class="text-lg"><strong>Role:</strong> <%= user.role %></p>
+        <p class="text-lg">
+          <strong>User ID:</strong>
+          <span class="font-mono bg-gray-200 px-2 py-1 rounded-md text-sm"
+            ><%= user._id %></span
+          >
+        </p>
+      </div>
+
+      <div class="mt-8 text-center">
+        <a
+          href="/"
+          class="inline-block px-6 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >Back to Home</a
+        >
+        <a
+          href="/logout"
+          class="inline-block ml-4 px-6 py-2 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >Logout</a
+        >
+      </div>
+    </div>
+  </body>
+</html>

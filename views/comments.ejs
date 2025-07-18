@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .comment-box {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      .comment-author {
+        font-weight: bold;
+        color: #3b82f6;
+      }
+      .comment-text {
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-900">
+    <div class="container bg-white shadow-lg rounded-lg mt-10">
+      <h1 class="text-2xl font-bold text-center mb-6">
+        Comments (Bad Practice: Stored XSS)
+      </h1>
+      <p class="text-center text-gray-600 mb-8">
+        แสดงความคิดเห็นที่อาจมีโค้ด JavaScript ที่เป็นอันตราย (ในตัวอย่างนี้
+        "Bob" มี payload XSS)
+      </p>
+
+      <div class="comments-list">
+        <% comments.forEach(comment => { %>
+        <div class="comment-box">
+          <div class="comment-author"><%= comment.author %></div>
+          <!-- Bad Practice: แสดงผล text โดยตรงโดยไม่มีการ escape HTML -->
+          <!-- EJS โดย default จะทำการ escape HTML ให้แล้ว (ใช้ <%= %>) -->
+          <!-- หากต้องการสาธิต Bad Practice จริงๆ ต้องใช้ <%- %> หรือสร้างช่องโหว่ใน client-side -->
+          <!-- สำหรับการสาธิตนี้ สมมติว่า EJS ไม่ได้ escape หรือมีช่องโหว่อื่นๆ -->
+          <div class="comment-text"><%- comment.text %></div>
+        </div>
+        <% }); %>
+      </div>
+
+      <p class="mt-8 text-center text-gray-600">
+        <a href="/" class="text-blue-600 hover:underline">กลับหน้าหลัก</a>
+      </p>
+    </div>
+  </body>
+</html>
