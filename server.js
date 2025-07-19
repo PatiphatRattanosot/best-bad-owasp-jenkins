@@ -88,6 +88,81 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24 // 1 วัน
     }
 }));
+// --- A08:2021 – Software and Data Integrity Failures ---
+
+// File Upload (Bad Practice: No File Type/Size Validation)
+
+const uploadBad = multer({ dest: 'uploads/' });
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const uploadBest = multer({
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 }, // 5 MB limit
+    fileFilter: (req, file, cb) => {
+        // Best: ตรวจสอบ MIME type ของไฟล์
+        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only JPEG, PNG, and PDF files are allowed!'), false);
+        }
+    }
+});
+
+app.post('/upload-bad', uploadBad.single('file'), (req, res) => {
+    // Bad: อนุญาตให้อัปโหลดไฟล์ประเภทใดก็ได้ ขนาดเท่าใดก็ได้
+    // อาจนำไปสู่การอัปโหลด Shell หรือไฟล์ขนาดใหญ่เพื่อ DoS
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    res.send(`File uploaded (bad practice): ${req.file.originalname}`);
+});
+
+// File Upload (Best Practice: File Type/Size Validation)
+
+app.post('/upload-best', uploadBest.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded or invalid file type/size.');
+    }
+    res.send(`File uploaded successfully (best practice): ${req.file.originalname}`);
+});
+
+// Insecure Deserialization (Bad Practice)
+// สำหรับการสาธิตนี้ จะใช้ JSON.parse() ที่ปลอดภัย แต่ในสถานการณ์จริง
+// ช่องโหว่นี้มักเกิดจากการใช้ไลบรารี deserialization ที่ไม่ปลอดภัย เช่น Node.js `vm` module
+// หรือไลบรารีที่จัดการกับ serialized objects ที่ซับซ้อนโดยไม่มีการตรวจสอบ
+app.post('/deserialize-bad', (req, res) => {
+    const data = req.body.data; // สมมติว่ารับเป็น string ที่จะ eval
+    try {
+        // Bad: การใช้ eval() หรือไลบรารีที่ประมวลผลโค้ดจาก input โดยตรง
+        // ใน ExpressJS โดยตรง การใช้ eval() เป็นสิ่งต้องห้าม
+        // ตัวอย่างนี้จำลองแนวคิดของ deserialization ที่ไม่ปลอดภัย
+        // หากผู้โจมตีส่งโค้ด JavaScript มาใน 'data' จะถูกรัน
+        eval(data); // อันตรายมาก! DO NOT USE IN PRODUCTION!
+        res.send('Deserialization attempted (bad practice). Check server console for effects.');
+    } catch (e) {
+        res.status(400).send('Error during deserialization (bad practice).');
+    }
+});
+
+// Insecure Deserialization (Best Practice)
+app.post('/deserialize-best', (req, res) => {
+    const data = req.body.data;
+    try {
+        // Best: ใช้ JSON.parse() สำหรับข้อมูล JSON เท่านั้น
+        // และไม่ควรประมวลผลโค้ดหรือ object ที่ซับซ้อนจาก input โดยตรง
+        const parsedData = JSON.parse(data);
+        res.json({ message: 'Data deserialized safely (best practice).', data: parsedData });
+    } catch (e) {
+        res.status(400).send('Invalid JSON data or safe deserialization failed.');
+    }
+});
 
 // A03/Other: CSRF (Best Practice: csurf)
 app.use(csrf({ cookie: true }));
@@ -325,80 +400,6 @@ app.get('/error-test-best', (req, res, next) => {
     const err = new Error('This is a test error for best practice.');
     err.status = 500;
     next(err); // ส่ง error ไปยัง error handling middleware
-});
-
-// --- A08:2021 – Software and Data Integrity Failures ---
-
-// File Upload (Bad Practice: No File Type/Size Validation)
-const uploadBad = multer({ dest: 'uploads/' });
-app.post('/upload-bad', uploadBad.single('file'), (req, res) => {
-    // Bad: อนุญาตให้อัปโหลดไฟล์ประเภทใดก็ได้ ขนาดเท่าใดก็ได้
-    // อาจนำไปสู่การอัปโหลด Shell หรือไฟล์ขนาดใหญ่เพื่อ DoS
-    if (!req.file) {
-        return res.status(400).send('No file uploaded.');
-    }
-    res.send(`File uploaded (bad practice): ${req.file.originalname}`);
-});
-
-// File Upload (Best Practice: File Type/Size Validation)
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-
-const uploadBest = multer({
-    storage: storage,
-    limits: { fileSize: 1024 * 1024 * 5 }, // 5 MB limit
-    fileFilter: (req, file, cb) => {
-        // Best: ตรวจสอบ MIME type ของไฟล์
-        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'application/pdf') {
-            cb(null, true);
-        } else {
-            cb(new Error('Only JPEG, PNG, and PDF files are allowed!'), false);
-        }
-    }
-});
-
-app.post('/upload-best', uploadBest.single('file'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded or invalid file type/size.');
-    }
-    res.send(`File uploaded successfully (best practice): ${req.file.originalname}`);
-});
-
-// Insecure Deserialization (Bad Practice)
-// สำหรับการสาธิตนี้ จะใช้ JSON.parse() ที่ปลอดภัย แต่ในสถานการณ์จริง
-// ช่องโหว่นี้มักเกิดจากการใช้ไลบรารี deserialization ที่ไม่ปลอดภัย เช่น Node.js `vm` module
-// หรือไลบรารีที่จัดการกับ serialized objects ที่ซับซ้อนโดยไม่มีการตรวจสอบ
-app.post('/deserialize-bad', (req, res) => {
-    const data = req.body.data; // สมมติว่ารับเป็น string ที่จะ eval
-    try {
-        // Bad: การใช้ eval() หรือไลบรารีที่ประมวลผลโค้ดจาก input โดยตรง
-        // ใน ExpressJS โดยตรง การใช้ eval() เป็นสิ่งต้องห้าม
-        // ตัวอย่างนี้จำลองแนวคิดของ deserialization ที่ไม่ปลอดภัย
-        // หากผู้โจมตีส่งโค้ด JavaScript มาใน 'data' จะถูกรัน
-        eval(data); // อันตรายมาก! DO NOT USE IN PRODUCTION!
-        res.send('Deserialization attempted (bad practice). Check server console for effects.');
-    } catch (e) {
-        res.status(400).send('Error during deserialization (bad practice).');
-    }
-});
-
-// Insecure Deserialization (Best Practice)
-app.post('/deserialize-best', (req, res) => {
-    const data = req.body.data;
-    try {
-        // Best: ใช้ JSON.parse() สำหรับข้อมูล JSON เท่านั้น
-        // และไม่ควรประมวลผลโค้ดหรือ object ที่ซับซ้อนจาก input โดยตรง
-        const parsedData = JSON.parse(data);
-        res.json({ message: 'Data deserialized safely (best practice).', data: parsedData });
-    } catch (e) {
-        res.status(400).send('Invalid JSON data or safe deserialization failed.');
-    }
 });
 
 
