@@ -42,7 +42,7 @@ app.use(cookieParser()); // สำหรับ csurf
 
 // A09:2021 – Security Logging and Monitoring Failures (Best Practice)
 // ใช้ morgan สำหรับ HTTP request logging
-app.use(morgan('combined')); // 'combined' format is good for production logging
+// app.use(morgan('combined')); // 'combined' format is good for production logging
 
 // A05:2021 – Security Misconfiguration (Best Practice: Helmet for Security Headers)
 // Helmet ช่วยตั้งค่า HTTP headers ต่างๆ เพื่อเพิ่มความปลอดภัย
@@ -168,10 +168,10 @@ app.post('/deserialize-best', (req, res) => {
 app.use(csrf({ cookie: true }));
 
 // Global CSRF token for all views
-app.use((req, res, next) => {
-    res.locals.csrfToken = req.csrfToken();
-    next();
-});
+// app.use((req, res, next) => {
+//     res.locals.csrfToken = req.csrfToken();
+//     next();
+// });
 
 // --- Routes ---
 
@@ -500,7 +500,7 @@ app.get('/transfer-best', (req, res) => {
     res.render('transfer', { csrfToken: req.csrfToken() }); // Best: มี CSRF token
 });
 
-app.post('/transfer-money-best', csrf(), (req, res) => {
+app.post('/transfer-money-best', (req, res) => {
     const { amount, recipient } = req.body;
     // Best: csurf middleware จะตรวจสอบ req.body._csrf token โดยอัตโนมัติ
     // หากไม่ถูกต้อง จะเกิด CSRF token mismatch error
