@@ -10,8 +10,20 @@ services:
     ports:
       - 8484:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - jenkins_home:/var/jenkins_home
+    environment:
+      - DOCKER_HOST=tcp://dind:2375
+    depends_on:
+      - dind
+
+  dind:
+    image: docker:dind
+    restart: always
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    command:
+      - --storage-driver=overlay2
 
 volumes:
   jenkins_home:
