@@ -6,6 +6,7 @@ pipeline {
   stages {
     stage("ZAP Testing") {
       steps {
+        // Hello
         sh "echo ${APP_NAME}"
         sh "docker version"
         sh "docker run -t zaproxy/zap-stable zap-full-scan.py -t http://host.docker.internal:3000"
